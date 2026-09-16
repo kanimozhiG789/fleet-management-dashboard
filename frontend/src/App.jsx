@@ -1304,7 +1304,12 @@ function App() {
           </button>
 
         </nav>
-
+<div className="admin-box">
+  <div>
+    <strong>Kanimozhi</strong>
+    <span>Fleet Manager</span>
+  </div>
+</div>
         </aside>
       <main className="main">
 
