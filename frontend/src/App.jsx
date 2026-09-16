@@ -823,6 +823,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   <MapContainer
     center={vehicleCoordinates[index]}
+    center={[13.0827, 80.2707]}
     zoom={11}
     style={{ height: "450px", width: "100%", borderRadius: "12px" }}
   >
@@ -834,6 +835,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
     {vehicles.map((vehicle, index) => (
       <CircleMarker
         key={vehicle.id}
+        center={vehicleCoordinates[index]}
         radius={10}
       >
         <Popup>
