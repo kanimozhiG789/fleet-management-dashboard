@@ -1305,16 +1305,7 @@ function App() {
 
         </nav>
 
-        <div className="admin-box">
-          <div className="admin-avatar">K</div>
-          <div>
-            <strong>Kanimozhi</strong>
-            <span>Fleet Manager</span>
-          </div>
-        </div>
-
-      </aside>
-
+        </aside>
       <main className="main">
 
         <header className="header">
@@ -1330,7 +1321,7 @@ function App() {
             </span>
 
             <div className="user">
-              <div className="user-avatar">K</div>
+              
               <span>Kanimozhi</span>
             </div>
           </div>
