@@ -748,3 +748,365 @@ footer {
   margin-top: 3px;
   color: #64748b;
 }
+/* ================= LOGIN EXPERIENCE ================= */
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #071426, #0d2745, #123d63);
+  color: white;
+}
+
+/* Moving road lines */
+.road-line {
+  position: absolute;
+  height: 4px;
+  width: 180px;
+  background: rgba(255, 255, 255, 0.25);
+  animation: roadMove 3s linear infinite;
+}
+
+.road-line-one {
+  bottom: 18%;
+  left: -200px;
+}
+
+.road-line-two {
+  bottom: 12%;
+  left: -500px;
+  animation-delay: 1s;
+}
+
+@keyframes roadMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(150vw);
+  }
+}
+
+/* ================= OPENING ================= */
+
+.fleet-opening {
+  text-align: center;
+  width: min(850px, 90%);
+  padding: 45px 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.opening-badge {
+  display: inline-block;
+  padding: 9px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.vehicle-scene {
+  height: 150px;
+  position: relative;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.moving-truck {
+  position: absolute;
+  left: -120px;
+  bottom: 35px;
+  font-size: 75px;
+  animation: truckDrive 4s linear infinite;
+}
+
+@keyframes truckDrive {
+  from {
+    left: -120px;
+  }
+
+  to {
+    left: calc(100% + 120px);
+  }
+}
+
+.city-light {
+  position: absolute;
+  bottom: 30px;
+  width: 8px;
+  height: 35px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.light-one {
+  left: 20%;
+}
+
+.light-two {
+  left: 55%;
+  height: 55px;
+}
+
+.light-three {
+  left: 80%;
+  height: 42px;
+}
+
+.fleet-opening h1 {
+  font-size: clamp(38px, 6vw, 64px);
+  margin: 10px 0;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.fleet-opening p {
+  font-size: 17px;
+  color: #cbd5e1;
+  margin-bottom: 32px;
+}
+
+.start-fleet-btn {
+  border: none;
+  padding: 16px 30px;
+  border-radius: 12px;
+  background: white;
+  color: #0d2745;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.start-fleet-btn span {
+  margin-left: 10px;
+  transition: 0.3s ease;
+}
+
+.start-fleet-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+.start-fleet-btn:hover span {
+  margin-left: 16px;
+}
+
+.opening-features {
+  margin-top: 35px;
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+/* ================= LOGIN ================= */
+
+.login-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.login-box {
+  width: min(450px, 88%);
+  padding: 42px 40px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.97);
+  color: #172033;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 5;
+}
+
+.login-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: #e8f1ff;
+  font-size: 38px;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-title h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.login-title p {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.input-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 15px;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+  outline: none;
+  font-size: 15px;
+  transition: 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.login-btn span {
+  margin-left: 8px;
+}
+
+.login-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.login-error {
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  text-align: center;
+}
+
+.login-footer {
+  margin-top: 22px;
+  text-align: center;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* ================= TRUCK LOGIN ANIMATION ================= */
+
+.login-vehicle {
+  position: absolute;
+  left: -130px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 85px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-crash .login-vehicle {
+  opacity: 1;
+  animation: loginTruckCrash 1.3s ease-in forwards;
+}
+
+.login-crash .login-box {
+  animation: loginBoxImpact 1.3s ease-in-out forwards;
+}
+
+@keyframes loginTruckCrash {
+  0% {
+    left: -130px;
+  }
+
+  70% {
+    left: 45%;
+  }
+
+  85% {
+    left: 52%;
+  }
+
+  100% {
+    left: 110%;
+  }
+}
+
+@keyframes loginBoxImpact {
+  0% {
+    transform: scale(1);
+  }
+
+  70% {
+    transform: scale(1);
+  }
+
+  78% {
+    transform: scale(1.03) rotate(-1deg);
+  }
+
+  86% {
+    transform: scale(0.98) rotate(1deg);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .login-box {
+    padding: 32px 24px;
+  }
+
+  .fleet-opening {
+    padding: 25px 15px;
+  }
+
+  .opening-features {
+    gap: 12px;
+  }
+
+  .moving-truck {
+    font-size: 58px;
+  }
+}

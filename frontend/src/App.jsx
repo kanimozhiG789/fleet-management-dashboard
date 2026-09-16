@@ -33,7 +33,23 @@ const vehicleLocations = [
   "Sriperumbudur",
   "Oragadam",
 ];
+const vehicleCoordinates = Array.from({ length: 100 }, (_, index) => {
+  const row = Math.floor(index / 10);
+  const column = index % 10;
 
+  return [
+    13.0827 + row * 0.008,
+    80.2707 + column * 0.008
+  ];
+});const vehicleCoordinates = Array.from({ length: 100 }, (_, index) => {
+  const row = Math.floor(index / 10);
+  const column = index % 10;
+
+  return [
+    13.0827 + row * 0.008,
+    80.2707 + column * 0.008
+  ];
+});
 const vehicles = Array.from({ length: 100 }, (_, index) => {
   const number = index + 1;
   const type = vehicleTypes[index % vehicleTypes.length];
@@ -814,7 +830,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
   <h2>🗺️ Live Vehicle Map</h2>
 
   <MapContainer
-    center={[13.0827, 80.2707]}
+    center={vehicleCoordinates[index]}
     zoom={11}
     style={{ height: "450px", width: "100%", borderRadius: "12px" }}
   >
@@ -826,10 +842,6 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
     {vehicles.map((vehicle, index) => (
       <CircleMarker
         key={vehicle.id}
-        center={[
-          13.0827 + index * 0.01,
-          80.2707 + index * 0.01
-        ]}
         radius={10}
       >
         <Popup>
