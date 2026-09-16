@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "leaf": "^2.1.1",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

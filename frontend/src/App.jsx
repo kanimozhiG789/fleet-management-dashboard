@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
-
+import Login from "./Login";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 /* =========================
    100 VEHICLES
 ========================= */
@@ -120,7 +122,7 @@ function App() {
   const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
-
+const [isLoggedIn, setIsLoggedIn] = useState(false);
   const totalVehicles = vehicles.length;
 
   const activeVehicles = vehicles.filter(
@@ -808,6 +810,43 @@ function App() {
 
   const LiveTracking = () => (
     <>
+    <div className="panel">
+  <h2>🗺️ Live Vehicle Map</h2>
+
+  <MapContainer
+    center={[13.0827, 80.2707]}
+    zoom={11}
+    style={{ height: "450px", width: "100%", borderRadius: "12px" }}
+  >
+    <TileLayer
+      attribution='&copy; OpenStreetMap contributors'
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+
+    {vehicles.map((vehicle, index) => (
+      <CircleMarker
+        key={vehicle.id}
+        center={[
+          13.0827 + index * 0.01,
+          80.2707 + index * 0.01
+        ]}
+        radius={10}
+      >
+        <Popup>
+          <strong>{vehicle.id}</strong>
+          <br />
+          Type: {vehicle.type}
+          <br />
+          Status: {vehicle.status}
+          <br />
+          Speed: {vehicle.speed} km/h
+          <br />
+          Fuel: {vehicle.fuel}%
+        </Popup>
+      </CircleMarker>
+    ))}
+  </MapContainer>
+</div>
       <div className="page-title">
         <div>
           <h1>Live Tracking</h1>
@@ -1200,7 +1239,9 @@ function App() {
   /* =========================
      MAIN UI
   ========================= */
-
+if (!isLoggedIn) {
+  return <Login onLogin={() => setIsLoggedIn(true)} />;
+}
   return (
     <div className="app">
 
