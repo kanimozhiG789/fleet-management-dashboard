@@ -41,14 +41,6 @@ const vehicleCoordinates = Array.from({ length: 100 }, (_, index) => {
     13.0827 + row * 0.008,
     80.2707 + column * 0.008
   ];
-});const vehicleCoordinates = Array.from({ length: 100 }, (_, index) => {
-  const row = Math.floor(index / 10);
-  const column = index % 10;
-
-  return [
-    13.0827 + row * 0.008,
-    80.2707 + column * 0.008
-  ];
 });
 const vehicles = Array.from({ length: 100 }, (_, index) => {
   const number = index + 1;
