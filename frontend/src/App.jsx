@@ -427,102 +427,249 @@ function App() {
      FUEL
   ========================= */
 
-  const FuelManagement = () => (
-    <>
-      <div className="page-title">
-        <div>
-          <h1>Fuel Management</h1>
-          <p>Monitor fuel consumption and efficiency</p>
-        </div>
-      </div>
+  const FuelManagement = () => {
+    const [fuelTab, setFuelTab] = useState("Overview");
 
-      <div className="cards">
+    const weeklyFuel = [
+      { day: "Monday", fuel: 165 },
+      { day: "Tuesday", fuel: 190 },
+      { day: "Wednesday", fuel: 145 },
+      { day: "Thursday", fuel: 210 },
+      { day: "Friday", fuel: 180 },
+      { day: "Saturday", fuel: 155 },
+      { day: "Sunday", fuel: 203 },
+    ];
 
-        <div className="card">
-          <div className="card-icon">⛽</div>
+    return (
+      <>
+        <div className="page-title">
           <div>
-            <h3>Total Fuel Used</h3>
-            <h2>1,248 L</h2>
+            <h1>Fuel Management</h1>
+            <p>Monitor fuel consumption and efficiency</p>
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-icon">💰</div>
-          <div>
-            <h3>Monthly Fuel Cost</h3>
-            <h2>₹1,12,500</h2>
-          </div>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+          <button
+            onClick={() => setFuelTab("Overview")}
+            style={{
+              padding: "10px 18px",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              background: fuelTab === "Overview" ? "#2563eb" : "#e9eef5",
+              color: fuelTab === "Overview" ? "white" : "#334155",
+              fontWeight: 600,
+            }}
+          >
+            📊 Overview
+          </button>
+
+          <button
+            onClick={() => setFuelTab("Consumption")}
+            style={{
+              padding: "10px 18px",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              background: fuelTab === "Consumption" ? "#2563eb" : "#e9eef5",
+              color: fuelTab === "Consumption" ? "white" : "#334155",
+              fontWeight: 600,
+            }}
+          >
+            ⛽ Consumption
+          </button>
         </div>
 
-        <div className="card">
-          <div className="card-icon">📈</div>
-          <div>
-            <h3>Average Efficiency</h3>
-            <h2>10.8 km/L</h2>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-icon">🏆</div>
-          <div>
-            <h3>Best Efficiency</h3>
-            <h2>12.4 km/L</h2>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="panel">
-        <h2>Weekly Fuel Consumption</h2>
-
-        <div className="weekly-bars">
-          {[65, 80, 55, 90, 72, 60, 85].map(
-            (value, index) => (
-              <div className="bar-column" key={index}>
-                <div
-                  className="bar"
-                  style={{ height: `${value * 2}px` }}
-                ></div>
-                <span>Day {index + 1}</span>
+        {fuelTab === "Overview" ? (
+          <>
+            <div className="cards">
+              <div className="card">
+                <div className="card-icon">⛽</div>
+                <div>
+                  <h3>Total Fuel Used</h3>
+                  <h2>1,248 L</h2>
+                </div>
               </div>
-            )
-          )}
-        </div>
-      </div>
 
-      <div className="panel">
-        <h2>Fuel Status by Vehicle</h2>
+              <div className="card">
+                <div className="card-icon">💰</div>
+                <div>
+                  <h3>Monthly Fuel Cost</h3>
+                  <h2>₹1,12,500</h2>
+                </div>
+              </div>
 
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Vehicle</th>
-                <th>Fuel Level</th>
-                <th>Status</th>
-                <th>Location</th>
-              </tr>
-            </thead>
+              <div className="card">
+                <div className="card-icon">📈</div>
+                <div>
+                  <h3>Average Efficiency</h3>
+                  <h2>10.8 km/L</h2>
+                </div>
+              </div>
 
-            <tbody>
-              {vehicles.map((vehicle) => (
-                <tr key={vehicle.id}>
-                  <td>{vehicle.id}</td>
-                  <td>{vehicle.fuel}%</td>
-                  <td>
-                    {vehicle.fuel < 40
-                      ? "Low Fuel"
-                      : "Normal"}
-                  </td>
-                  <td>{vehicle.location}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  );
+              <div className="card">
+                <div className="card-icon">🏆</div>
+                <div>
+                  <h3>Best Efficiency</h3>
+                  <h2>12.4 km/L</h2>
+                </div>
+              </div>
+            </div>
+
+            <div className="panel">
+              <h2>Weekly Fuel Consumption</h2>
+              <div className="weekly-bars">
+                {weeklyFuel.map((item) => (
+                  <div className="bar-column" key={item.day}>
+                    <div
+                      className="bar"
+                      style={{ height: `${item.fuel}px` }}
+                      title={`${item.day}: ${item.fuel} L`}
+                    ></div>
+                    <span>{item.day.slice(0, 3)}</span>
+                    <small>{item.fuel} L</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel">
+              <h2>Fuel Status by Vehicle</h2>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Vehicle</th>
+                      <th>Fuel Level</th>
+                      <th>Status</th>
+                      <th>Location</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vehicles.map((vehicle) => (
+                      <tr key={vehicle.id}>
+                        <td>{vehicle.id}</td>
+                        <td>{vehicle.fuel}%</td>
+                        <td>{vehicle.fuel < 40 ? "Low Fuel" : "Normal"}</td>
+                        <td>{vehicle.location}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="cards">
+              <div className="card">
+                <div className="card-icon">⛽</div>
+                <div>
+                  <h3>Total Consumption</h3>
+                  <h2>1,248 L</h2>
+                  <p>Current month</p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon">📅</div>
+                <div>
+                  <h3>Daily Average</h3>
+                  <h2>178 L</h2>
+                  <p>Average per day</p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon">🚛</div>
+                <div>
+                  <h3>Vehicles Tracked</h3>
+                  <h2>100</h2>
+                  <p>Fleet vehicles</p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon">📊</div>
+                <div>
+                  <h3>Average Efficiency</h3>
+                  <h2>10.8 km/L</h2>
+                  <p>Fleet average</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="panel">
+              <h2>⛽ Consumption Details</h2>
+              <p>Daily fuel consumption and estimated cost</p>
+
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Fuel Used</th>
+                      <th>Estimated Cost</th>
+                      <th>Efficiency</th>
+                      <th>Consumption Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {weeklyFuel.map((item, index) => {
+                      const efficiency = (9.8 + (index % 5) * 0.3).toFixed(1);
+                      const cost = item.fuel * 90;
+                      return (
+                        <tr key={item.day}>
+                          <td><strong>{item.day}</strong></td>
+                          <td>{item.fuel} L</td>
+                          <td>₹{cost.toLocaleString("en-IN")}</td>
+                          <td>{efficiency} km/L</td>
+                          <td>
+                            <span className={`priority ${item.fuel >= 195 ? "high" : item.fuel >= 175 ? "medium" : "low"}`}>
+                              {item.fuel >= 195 ? "High" : item.fuel >= 175 ? "Medium" : "Low"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="panel">
+              <h2>Vehicle-wise Consumption</h2>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Vehicle</th>
+                      <th>Type</th>
+                      <th>Fuel Level</th>
+                      <th>Efficiency</th>
+                      <th>Location</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vehicles.map((vehicle) => (
+                      <tr key={vehicle.id}>
+                        <td><strong>{vehicle.id}</strong></td>
+                        <td>{vehicle.type}</td>
+                        <td>{vehicle.fuel}%</td>
+                        <td>{(8 + (vehicle.fuel % 45) / 10).toFixed(1)} km/L</td>
+                        <td>{vehicle.location}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+      </>
+    );
+  };
 
   /* =========================
      MAINTENANCE
