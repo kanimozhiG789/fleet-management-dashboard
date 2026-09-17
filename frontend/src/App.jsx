@@ -308,99 +308,92 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
   /* =========================
      VEHICLES
   ========================= */
-
-  const Vehicles = () => (
-    <>
-      <div className="page-title">
-        <div>
-          <h1>Vehicle Management</h1>
-          <p>Manage and monitor all 100 vehicles</p>
-        </div>
+const LiveTracking = () => (
+  <>
+    <div className="page-title">
+      <div>
+        <h1>Live Tracking</h1>
+        <p>Real-time vehicle status monitoring</p>
       </div>
 
-      <div className="cards">
+      <span className="live-badge">● LIVE</span>
+    </div>
 
-        <div className="card">
-          <div className="card-icon">🚛</div>
-          <div>
-            <h3>Total</h3>
-            <h2>{totalVehicles}</h2>
-          </div>
-        </div>
+    <div className="panel">
+      <h2>🗺️ Live Vehicle Map</h2>
 
-        <div className="card">
-          <div className="card-icon">🟢</div>
-          <div>
-            <h3>Active</h3>
-            <h2>{activeVehicles}</h2>
-          </div>
-        </div>
+      <div
+        style={{
+          height: "450px",
+          width: "100%",
+          overflow: "hidden",
+          borderRadius: "12px",
+          marginTop: "15px",
+        }}
+      >
+        <MapContainer
+          center={[13.0827, 80.2707]}
+          zoom={11}
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-        <div className="card">
-          <div className="card-icon">⏸️</div>
-          <div>
-            <h3>Idle</h3>
-            <h2>{idleVehicles}</h2>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-icon">🔧</div>
-          <div>
-            <h3>Maintenance</h3>
-            <h2>{maintenanceVehicles}</h2>
-          </div>
-        </div>
-
+          {vehicles.map((vehicle, index) => (
+            <CircleMarker
+              key={vehicle.id}
+              center={vehicleCoordinates[index]}
+              radius={8}
+            >
+              <Popup>
+                <strong>{vehicle.id}</strong>
+                <br />
+                Type: {vehicle.type}
+                <br />
+                Status: {vehicle.status}
+                <br />
+                Speed: {vehicle.speed} km/h
+                <br />
+                Fuel: {vehicle.fuel}%
+                <br />
+                Location: {vehicle.location}
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
       </div>
+    </div>
 
-      <div className="panel">
-        <div className="panel-header">
+    <div className="tracking-list">
+      {vehicles.map((vehicle) => (
+        <div className="tracking-card" key={vehicle.id}>
           <div>
-            <h2>All Vehicles</h2>
-            <p>100 fleet records</p>
+            <h3>{vehicle.id}</h3>
+            <p>{vehicle.type} • {vehicle.location}</p>
+          </div>
+
+          <div>
+            <strong>{vehicle.speed} km/h</strong>
+            <p>{vehicle.status}</p>
+          </div>
+          <div>
+            <span className={`status ${vehicle.status.toLowerCase()}`}>
+              {vehicle.status}
+            </span>
           </div>
         </div>
 
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Fuel</th>
-                <th>Speed</th>
-                <th>Location</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {vehicles.map((vehicle) => (
-                <tr
-                  key={vehicle.id}
-                  onClick={() => setSelectedVehicle(vehicle)}
-                  className="clickable-row"
-                >
-                  <td><strong>{vehicle.id}</strong></td>
-                  <td>{vehicle.type}</td>
-                  <td>
-                    <span className={`status ${vehicle.status.toLowerCase()}`}>
-                      {vehicle.status}
-                    </span>
-                  </td>
-                  <td>{vehicle.fuel}%</td>
-                  <td>{vehicle.speed} km/h</td>
-                  <td>{vehicle.location}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  );
-
+      ))}
+    </div>
+  </>
+);
+  
+  
   /* =========================
      TRIPS
   ========================= */
@@ -812,79 +805,9 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
     </>
   );
 
-  /* =========================
-     LIVE TRACKING
-  ========================= */
+ 
+  
 
-  const LiveTracking = () => (
-    <>
-    <div className="panel">
-  <h2>🗺️ Live Vehicle Map</h2>
-
-  <MapContainer
-    center={vehicleCoordinates[index]}
-    center={[13.0827, 80.2707]}
-    zoom={11}
-    style={{ height: "450px", width: "100%", borderRadius: "12px" }}
-  >
-    <TileLayer
-      attribution='&copy; OpenStreetMap contributors'
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    />
-
-    {vehicles.map((vehicle, index) => (
-      <CircleMarker
-        key={vehicle.id}
-        center={vehicleCoordinates[index]}
-        radius={10}
-      >
-        <Popup>
-          <strong>{vehicle.id}</strong>
-          <br />
-          Type: {vehicle.type}
-          <br />
-          Status: {vehicle.status}
-          <br />
-          Speed: {vehicle.speed} km/h
-          <br />
-          Fuel: {vehicle.fuel}%
-        </Popup>
-      </CircleMarker>
-    ))}
-  </MapContainer>
-</div>
-      <div className="page-title">
-        <div>
-          <h1>Live Tracking</h1>
-          <p>Real-time vehicle status monitoring</p>
-        </div>
-
-        <span className="live-badge">● LIVE</span>
-      </div>
-
-      <div className="tracking-list">
-        {vehicles.map((vehicle) => (
-          <div className="tracking-card" key={vehicle.id}>
-            <div>
-              <h3>{vehicle.id}</h3>
-              <p>{vehicle.type} • {vehicle.location}</p>
-            </div>
-
-            <div>
-              <strong>{vehicle.speed} km/h</strong>
-              <p>{vehicle.status}</p>
-            </div>
-
-            <div>
-              <span className={`status ${vehicle.status.toLowerCase()}`}>
-                {vehicle.status}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
 
   /* =========================
      PREDICTIONS
