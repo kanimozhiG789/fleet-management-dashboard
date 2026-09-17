@@ -1,113 +1,12 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  Popup,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import "./App.css";
-
-/* =========================================================
-   ERROR BOUNDARY
-   Prevents complete white screen when a React render error
-   happens inside the dashboard.
-========================================================= */
-
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      hasError: false,
-      errorMessage: "",
-    };
-  }
-
-  static getDerivedStateFromError(error) {
-    return {
-      hasError: true,
-      errorMessage: error?.message || "Unknown application error",
-    };
-  }
-
-  componentDidCatch(error, info) {
-    console.error("FleetPro render error:", error);
-    console.error("Component stack:", info?.componentStack);
-  }
-
-  handleReload = () => {
-    window.location.reload();
-  };
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "#f8fafc",
-            padding: "30px",
-            fontFamily: "Arial, sans-serif",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "600px",
-              width: "100%",
-              background: "#ffffff",
-              borderRadius: "18px",
-              padding: "35px",
-              textAlign: "center",
-              boxShadow: "0 15px 40px rgba(0,0,0,0.10)",
-            }}
-          >
-            <div style={{ fontSize: "55px" }}>🚛</div>
-
-            <h1 style={{ marginBottom: "10px" }}>
-              FleetPro Dashboard Error
-            </h1>
-
-            <p style={{ color: "#64748b", lineHeight: 1.6 }}>
-              Something went wrong while displaying this page.
-              The rest of the application is protected from a
-              complete white screen.
-            </p>
-
-            <div
-              style={{
-                marginTop: "20px",
-                padding: "12px",
-                background: "#fff1f2",
-                color: "#be123c",
-                borderRadius: "10px",
-                fontSize: "14px",
-                textAlign: "left",
-                wordBreak: "break-word",
-              }}
-            >
-              {this.state.errorMessage}
-            </div>
-
-            <button
-              onClick={this.handleReload}
-              style={{
-                marginTop: "20px",
-                border: "none",
-                background: "#2563eb",
-                color: "#fff",
-                padding: "12px 22px",
-                borderRadius: "10px",
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
-            >
-              Reload Dashboard
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 /* =========================================================
    100 VEHICLES
@@ -115,11 +14,7 @@ class ErrorBoundary extends Component {
 
 const vehicleTypes = ["Truck", "Van", "Bus"];
 
-const vehicleStatuses = [
-  "Active",
-  "Idle",
-  "Maintenance",
-];
+const vehicleStatuses = ["Active", "Idle", "Maintenance"];
 
 const vehicleLocations = [
   "Chennai",
@@ -144,40 +39,33 @@ const vehicleLocations = [
   "Oragadam",
 ];
 
-const vehicles = Array.from(
-  { length: 100 },
-  (_, index) => {
-    const number = index + 1;
+const vehicles = Array.from({ length: 100 }, (_, index) => {
+  const number = index + 1;
 
-    const type =
-      vehicleTypes[index % vehicleTypes.length];
+  const type = vehicleTypes[index % vehicleTypes.length];
 
-    const status =
-      vehicleStatuses[index % vehicleStatuses.length];
+  const status =
+    vehicleStatuses[index % vehicleStatuses.length];
 
-    const fuel =
-      30 + ((index * 7) % 71);
+  const fuel = 30 + ((index * 7) % 71);
 
-    const speed =
-      status === "Active"
-        ? 40 + ((index * 5) % 41)
-        : 0;
+  const speed =
+    status === "Active"
+      ? 40 + ((index * 5) % 41)
+      : 0;
 
-    const location =
-      vehicleLocations[
-        index % vehicleLocations.length
-      ];
+  const location =
+    vehicleLocations[index % vehicleLocations.length];
 
-    return {
-      id: `TN-${String(number).padStart(2, "0")}`,
-      type,
-      status,
-      fuel,
-      speed,
-      location,
-    };
-  }
-);
+  return {
+    id: `TN-${String(number).padStart(2, "0")}`,
+    type,
+    status,
+    fuel,
+    speed,
+    location,
+  };
+});
 
 /* =========================================================
    100 TRIPS
@@ -202,26 +90,13 @@ const tripStatuses = [
   "Scheduled",
 ];
 
-const trips = Array.from(
-  { length: 100 },
-  (_, index) => ({
-    id: `TR-${101 + index}`,
-    vehicle: `TN-${String(
-      (index % 100) + 1
-    ).padStart(2, "0")}`,
-    route:
-      tripRoutes[
-        index % tripRoutes.length
-      ],
-    distance: `${
-      120 + ((index * 23) % 381)
-    } km`,
-    status:
-      tripStatuses[
-        index % tripStatuses.length
-      ],
-  })
-);
+const trips = Array.from({ length: 100 }, (_, index) => ({
+  id: `TR-${101 + index}`,
+  vehicle: `TN-${String((index % 100) + 1).padStart(2, "0")}`,
+  route: tripRoutes[index % tripRoutes.length],
+  distance: `${120 + ((index * 23) % 381)} km`,
+  status: tripStatuses[index % tripStatuses.length],
+}));
 
 /* =========================================================
    100 MAINTENANCE RECORDS
@@ -238,40 +113,281 @@ const maintenanceIssues = [
   "Maintenance Good",
 ];
 
-const priorities = [
-  "High",
-  "Medium",
-  "Low",
-];
+const priorities = ["High", "Medium", "Low"];
 
 const maintenance = Array.from(
   { length: 100 },
   (_, index) => ({
-    vehicle: `TN-${String(
-      (index % 100) + 1
-    ).padStart(2, "0")}`,
-
+    vehicle: `TN-${String((index % 100) + 1).padStart(2, "0")}`,
     issue:
       maintenanceIssues[
         index % maintenanceIssues.length
       ],
-
-    date: `${
-      15 + (index % 15)
-    } Aug 2026`,
-
+    date: `${15 + (index % 15)} Aug 2026`,
     priority:
-      priorities[
-        index % priorities.length
-      ],
+      priorities[index % priorities.length],
   })
 );
 
 /* =========================================================
-   APP
+   MAP COORDINATES
+   Simulated Chennai coordinates for demo
+========================================================= */
+
+const vehicleCoordinates = Array.from(
+  { length: 100 },
+  (_, index) => {
+    const row = Math.floor(index / 10);
+    const column = index % 10;
+
+    return [
+      13.0827 + row * 0.008,
+      80.2707 + column * 0.008,
+    ];
+  }
+);
+
+/* =========================================================
+   LOGIN + TRUCK TRANSITION
+========================================================= */
+
+function LoginPage({ onLogin }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+
+    setError("");
+
+    if (
+      username.trim() === "admin" &&
+      password === "1234"
+    ) {
+      setLoggingIn(true);
+
+      setTimeout(() => {
+        onLogin();
+      }, 1400);
+
+      return;
+    }
+
+    setError("Invalid username or password");
+  };
+
+  if (loggingIn) {
+    return (
+      <div className="login-page">
+        <div className="login-transition">
+          <div className="truck-road">
+            <div className="truck-animation">
+              🚛
+            </div>
+          </div>
+
+          <h1>FleetPro</h1>
+
+          <p>
+            Opening Fleet Management Dashboard...
+          </p>
+
+          <div className="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="login-page">
+      <div className="login-background-circle circle-one"></div>
+      <div className="login-background-circle circle-two"></div>
+
+      <div className="login-container">
+        <div className="login-vehicle">
+          🚛
+        </div>
+
+        <div className="login-box">
+          <div className="login-logo">
+            🚛
+          </div>
+
+          <h1>FleetPro</h1>
+
+          <p className="login-subtitle">
+            Fleet Management Dashboard
+          </p>
+
+          <div className="login-line"></div>
+
+          <form onSubmit={handleLogin}>
+            <div className="input-group">
+              <label>Username</label>
+
+              <input
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) =>
+                  setUsername(e.target.value)
+                }
+                autoComplete="username"
+              />
+            </div>
+
+            <div className="input-group">
+              <label>Password</label>
+
+              <input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                autoComplete="current-password"
+              />
+            </div>
+
+            {error && (
+              <div className="login-error">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="login-btn"
+            >
+              Login to Dashboard
+              <span>→</span>
+            </button>
+          </form>
+
+          <div className="login-footer">
+            🔒 Secure Admin Access
+          </div>
+
+          <div className="demo-login">
+            Demo Login: admin / 1234
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   ERROR BOUNDARY
+========================================================= */
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hasError: false,
+      errorMessage: "",
+    };
+  }
+
+  static getDerivedStateFromError(error) {
+    return {
+      hasError: true,
+      errorMessage:
+        error?.message || "Unknown error",
+    };
+  }
+
+  componentDidCatch(error, info) {
+    console.error("FleetPro Error:", error);
+    console.error("Component Info:", info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "30px",
+            background: "#f1f5f9",
+            fontFamily: "Arial, sans-serif",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: "35px",
+              borderRadius: "18px",
+              maxWidth: "600px",
+              width: "100%",
+              textAlign: "center",
+              boxShadow:
+                "0 15px 40px rgba(15,23,42,0.12)",
+            }}
+          >
+            <div style={{ fontSize: "50px" }}>
+              ⚠️
+            </div>
+
+            <h1>FleetPro Error</h1>
+
+            <p>
+              Something went wrong while loading
+              this page.
+            </p>
+
+            <small>
+              {this.state.errorMessage}
+            </small>
+
+            <br />
+            <br />
+
+            <button
+              onClick={() =>
+                window.location.reload()
+              }
+              style={{
+                padding: "12px 22px",
+                border: "none",
+                borderRadius: "10px",
+                background: "#2563eb",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "700",
+              }}
+            >
+              Reload Dashboard
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+/* =========================================================
+   MAIN APP
 ========================================================= */
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] =
+    useState(false);
+
   const [activeMenu, setActiveMenu] =
     useState("Dashboard");
 
@@ -283,17 +399,15 @@ function App() {
 
   const totalVehicles = vehicles.length;
 
-  const activeVehicles =
-    vehicles.filter(
-      (vehicle) =>
-        vehicle.status === "Active"
-    ).length;
+  const activeVehicles = vehicles.filter(
+    (vehicle) =>
+      vehicle.status === "Active"
+  ).length;
 
-  const idleVehicles =
-    vehicles.filter(
-      (vehicle) =>
-        vehicle.status === "Idle"
-    ).length;
+  const idleVehicles = vehicles.filter(
+    (vehicle) =>
+      vehicle.status === "Idle"
+  ).length;
 
   const maintenanceVehicles =
     vehicles.filter(
@@ -301,14 +415,19 @@ function App() {
         vehicle.status === "Maintenance"
     ).length;
 
-  const averageSpeed =
-    Math.round(
-      vehicles.reduce(
-        (sum, vehicle) =>
-          sum + vehicle.speed,
-        0
-      ) / vehicles.length
-    );
+  const averageSpeed = Math.round(
+    vehicles.reduce(
+      (sum, vehicle) =>
+        sum + vehicle.speed,
+      0
+    ) / vehicles.length
+  );
+
+  const goToMenu = (menu) => {
+    setActiveMenu(menu);
+    setSelectedVehicle(null);
+    setSelectedReport(null);
+  };
 
   /* =======================================================
      DASHBOARD
@@ -323,18 +442,18 @@ function App() {
           </h1>
 
           <p>
-            Smart Fleet Operations • Vehicle
-            Monitoring • Fuel • Maintenance
+            Smart Fleet Operations •
+            Vehicle Monitoring • Fuel •
+            Maintenance
           </p>
         </div>
       </div>
 
       <div className="cards">
-
         <div
           className="card clickable"
           onClick={() =>
-            setActiveMenu("Vehicles")
+            goToMenu("Vehicles")
           }
         >
           <div className="card-icon">
@@ -343,7 +462,11 @@ function App() {
 
           <div>
             <h3>Total Vehicles</h3>
-            <h2>{totalVehicles}</h2>
+
+            <h2>
+              {totalVehicles}
+            </h2>
+
             <span>
               View all vehicles →
             </span>
@@ -353,7 +476,7 @@ function App() {
         <div
           className="card clickable"
           onClick={() =>
-            setActiveMenu("Live Tracking")
+            goToMenu("Live Tracking")
           }
         >
           <div className="card-icon">
@@ -362,22 +485,21 @@ function App() {
 
           <div>
             <h3>Active Vehicles</h3>
-            <h2>{activeVehicles}</h2>
+
+            <h2>
+              {activeVehicles}
+            </h2>
+
             <span>
               Live tracking →
             </span>
           </div>
         </div>
 
-        {/* IMPORTANT:
-            Idle card now opens a dedicated Idle page.
-            No filter page is required.
-        */}
-
         <div
           className="card clickable"
           onClick={() =>
-            setActiveMenu("Idle Vehicles")
+            goToMenu("Idle Vehicles")
           }
         >
           <div className="card-icon">
@@ -386,7 +508,11 @@ function App() {
 
           <div>
             <h3>Idle Vehicles</h3>
-            <h2>{idleVehicles}</h2>
+
+            <h2>
+              {idleVehicles}
+            </h2>
+
             <span>
               View idle vehicles →
             </span>
@@ -396,7 +522,7 @@ function App() {
         <div
           className="card clickable"
           onClick={() =>
-            setActiveMenu("Maintenance")
+            goToMenu("Maintenance")
           }
         >
           <div className="card-icon">
@@ -405,19 +531,23 @@ function App() {
 
           <div>
             <h3>Maintenance</h3>
-            <h2>{maintenanceVehicles}</h2>
+
+            <h2>
+              {maintenanceVehicles}
+            </h2>
+
             <span>
               Maintenance records →
             </span>
           </div>
         </div>
-
       </div>
 
       <div className="panel">
         <div className="panel-header">
           <div>
             <h2>Fleet Health</h2>
+
             <p>
               Overall fleet performance
             </p>
@@ -429,7 +559,6 @@ function App() {
         </div>
 
         <div className="health-bars">
-
           <div>
             <span>Utilization</span>
             <b>91%</b>
@@ -439,7 +568,7 @@ function App() {
                 style={{
                   width: "91%",
                 }}
-              />
+              ></div>
             </div>
           </div>
 
@@ -452,7 +581,7 @@ function App() {
                 style={{
                   width: "84%",
                 }}
-              />
+              ></div>
             </div>
           </div>
 
@@ -465,17 +594,19 @@ function App() {
                 style={{
                   width: "89%",
                 }}
-              />
+              ></div>
             </div>
           </div>
-
         </div>
       </div>
 
       <div className="panel">
         <div className="panel-header">
           <div>
-            <h2>Vehicle Overview</h2>
+            <h2>
+              Vehicle Overview
+            </h2>
+
             <p>
               Sample fleet vehicles
             </p>
@@ -484,7 +615,7 @@ function App() {
           <button
             className="panel-button"
             onClick={() =>
-              setActiveMenu("Vehicles")
+              goToMenu("Vehicles")
             }
           >
             View All 100
@@ -573,7 +704,6 @@ function App() {
       </div>
 
       <div className="cards">
-
         <div className="card">
           <div className="card-icon">
             🚛
@@ -581,6 +711,7 @@ function App() {
 
           <div>
             <h3>Total</h3>
+
             <h2>
               {totalVehicles}
             </h2>
@@ -594,6 +725,7 @@ function App() {
 
           <div>
             <h3>Active</h3>
+
             <h2>
               {activeVehicles}
             </h2>
@@ -607,6 +739,7 @@ function App() {
 
           <div>
             <h3>Idle</h3>
+
             <h2>
               {idleVehicles}
             </h2>
@@ -620,18 +753,19 @@ function App() {
 
           <div>
             <h3>Maintenance</h3>
+
             <h2>
               {maintenanceVehicles}
             </h2>
           </div>
         </div>
-
       </div>
 
       <div className="panel">
         <div className="panel-header">
           <div>
             <h2>All Vehicles</h2>
+
             <p>
               100 fleet records
             </p>
@@ -652,49 +786,47 @@ function App() {
             </thead>
 
             <tbody>
-              {vehicles.map(
-                (vehicle) => (
-                  <tr
-                    key={vehicle.id}
-                    onClick={() =>
-                      setSelectedVehicle(
-                        vehicle
-                      )
-                    }
-                    className="clickable-row"
-                  >
-                    <td>
-                      <strong>
-                        {vehicle.id}
-                      </strong>
-                    </td>
+              {vehicles.map((vehicle) => (
+                <tr
+                  key={vehicle.id}
+                  onClick={() =>
+                    setSelectedVehicle(
+                      vehicle
+                    )
+                  }
+                  className="clickable-row"
+                >
+                  <td>
+                    <strong>
+                      {vehicle.id}
+                    </strong>
+                  </td>
 
-                    <td>
-                      {vehicle.type}
-                    </td>
+                  <td>
+                    {vehicle.type}
+                  </td>
 
-                    <td>
-                      <span
-                        className={`status ${vehicle.status.toLowerCase()}`}
-                      >
-                        {vehicle.status}
-                      </span>
-                    </td>
+                  <td>
+                    <span
+                      className={`status ${vehicle.status.toLowerCase()}`}
+                    >
+                      {vehicle.status}
+                    </span>
+                  </td>
 
-                    <td>
-                      {vehicle.fuel}%
-                    </td>
+                  <td>
+                    {vehicle.fuel}%
+                  </td>
 
-                    <td>
-                      {vehicle.speed} km/h
-                    </td>
+                  <td>
+                    {vehicle.speed} km/h
+                  </td>
 
-                    <td>
-                      {vehicle.location}
-                    </td>
-                  </tr>
-                )
-              )}
+                  <td>
+                    {vehicle.location}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -704,57 +836,49 @@ function App() {
 
   /* =======================================================
      IDLE VEHICLES
-     THIS IS THE MAIN FIX
+     DO NOT CHANGE
   ======================================================= */
 
   const IdleVehicles = () => {
-    const idleList =
-      vehicles.filter(
-        (vehicle) =>
-          vehicle.status === "Idle"
-      );
+    const idleList = vehicles.filter(
+      (vehicle) =>
+        vehicle.status === "Idle"
+    );
 
     return (
       <>
         <div className="page-title">
           <div>
-            <h1>
-              Idle Vehicles
-            </h1>
+            <h1>Idle Vehicles</h1>
 
             <p>
-              Vehicles currently not
-              operating
+              Vehicles currently not in
+              operation
             </p>
           </div>
         </div>
 
         <div className="cards">
-
           <div className="card">
             <div className="card-icon">
               ⏸️
             </div>
 
             <div>
-              <h3>
-                Total Idle Vehicles
-              </h3>
+              <h3>Idle Vehicles</h3>
 
               <h2>
                 {idleList.length}
               </h2>
 
               <span>
-                Current idle fleet
+                Currently idle
               </span>
             </div>
           </div>
-
         </div>
 
         <div className="panel">
-
           <div className="panel-header">
             <div>
               <h2>
@@ -762,15 +886,14 @@ function App() {
               </h2>
 
               <p>
-                Showing all currently
-                idle vehicles
+                {idleList.length} vehicles
+                are currently idle
               </p>
             </div>
           </div>
 
           <div className="table-container">
             <table>
-
               <thead>
                 <tr>
                   <th>Vehicle ID</th>
@@ -783,7 +906,6 @@ function App() {
               </thead>
 
               <tbody>
-
                 {idleList.map(
                   (vehicle) => (
                     <tr
@@ -816,7 +938,7 @@ function App() {
                       </td>
 
                       <td>
-                        0 km/h
+                        {vehicle.speed} km/h
                       </td>
 
                       <td>
@@ -825,23 +947,9 @@ function App() {
                     </tr>
                   )
                 )}
-
               </tbody>
             </table>
           </div>
-
-          {idleList.length === 0 && (
-            <div
-              style={{
-                padding: "30px",
-                textAlign: "center",
-                color: "#64748b",
-              }}
-            >
-              No idle vehicles found.
-            </div>
-          )}
-
         </div>
       </>
     );
@@ -855,9 +963,7 @@ function App() {
     <>
       <div className="page-title">
         <div>
-          <h1>
-            Trip Management
-          </h1>
+          <h1>Trip Management</h1>
 
           <p>
             100 trip records and route
@@ -867,7 +973,6 @@ function App() {
       </div>
 
       <div className="trip-grid">
-
         {trips.map((trip) => (
           <div
             className="trip-card"
@@ -898,7 +1003,6 @@ function App() {
             </p>
           </div>
         ))}
-
       </div>
     </>
   );
@@ -991,9 +1095,7 @@ function App() {
 
           <button
             onClick={() =>
-              setFuelTab(
-                "Consumption"
-              )
+              setFuelTab("Consumption")
             }
             style={{
               padding:
@@ -1021,7 +1123,6 @@ function App() {
         {fuelTab === "Overview" ? (
           <>
             <div className="cards">
-
               <div className="card">
                 <div className="card-icon">
                   ⛽
@@ -1031,6 +1132,7 @@ function App() {
                   <h3>
                     Total Fuel Used
                   </h3>
+
                   <h2>
                     1,248 L
                   </h2>
@@ -1084,7 +1186,6 @@ function App() {
                   </h2>
                 </div>
               </div>
-
             </div>
 
             <div className="panel">
@@ -1093,7 +1194,6 @@ function App() {
               </h2>
 
               <div className="weekly-bars">
-
                 {weeklyFuel.map(
                   (item) => (
                     <div
@@ -1106,7 +1206,7 @@ function App() {
                           height: `${item.fuel}px`,
                         }}
                         title={`${item.day}: ${item.fuel} L`}
-                      />
+                      ></div>
 
                       <span>
                         {item.day.slice(
@@ -1121,7 +1221,6 @@ function App() {
                     </div>
                   )
                 )}
-
               </div>
             </div>
 
@@ -1134,10 +1233,21 @@ function App() {
                 <table>
                   <thead>
                     <tr>
-                      <th>Vehicle</th>
-                      <th>Fuel Level</th>
-                      <th>Status</th>
-                      <th>Location</th>
+                      <th>
+                        Vehicle
+                      </th>
+
+                      <th>
+                        Fuel Level
+                      </th>
+
+                      <th>
+                        Status
+                      </th>
+
+                      <th>
+                        Location
+                      </th>
                     </tr>
                   </thead>
 
@@ -1145,7 +1255,9 @@ function App() {
                     {vehicles.map(
                       (vehicle) => (
                         <tr
-                          key={vehicle.id}
+                          key={
+                            vehicle.id
+                          }
                         >
                           <td>
                             {vehicle.id}
@@ -1163,7 +1275,9 @@ function App() {
                           </td>
 
                           <td>
-                            {vehicle.location}
+                            {
+                              vehicle.location
+                            }
                           </td>
                         </tr>
                       )
@@ -1176,7 +1290,6 @@ function App() {
         ) : (
           <>
             <div className="cards">
-
               <div className="card">
                 <div className="card-icon">
                   ⛽
@@ -1227,9 +1340,7 @@ function App() {
                     Vehicles Tracked
                   </h3>
 
-                  <h2>
-                    100
-                  </h2>
+                  <h2>100</h2>
 
                   <p>
                     Fleet vehicles
@@ -1256,7 +1367,6 @@ function App() {
                   </p>
                 </div>
               </div>
-
             </div>
 
             <div className="panel">
@@ -1274,11 +1384,15 @@ function App() {
                   <thead>
                     <tr>
                       <th>Day</th>
-                      <th>Fuel Used</th>
+                      <th>
+                        Fuel Used
+                      </th>
                       <th>
                         Estimated Cost
                       </th>
-                      <th>Efficiency</th>
+                      <th>
+                        Efficiency
+                      </th>
                       <th>
                         Consumption Level
                       </th>
@@ -1299,7 +1413,8 @@ function App() {
                           item.fuel * 90;
 
                         const level =
-                          item.fuel >= 195
+                          item.fuel >=
+                          195
                             ? "High"
                             : item.fuel >=
                               175
@@ -1308,11 +1423,15 @@ function App() {
 
                         return (
                           <tr
-                            key={item.day}
+                            key={
+                              item.day
+                            }
                           >
                             <td>
                               <strong>
-                                {item.day}
+                                {
+                                  item.day
+                                }
                               </strong>
                             </td>
 
@@ -1357,11 +1476,23 @@ function App() {
                 <table>
                   <thead>
                     <tr>
-                      <th>Vehicle</th>
+                      <th>
+                        Vehicle
+                      </th>
+
                       <th>Type</th>
-                      <th>Fuel Level</th>
-                      <th>Efficiency</th>
-                      <th>Location</th>
+
+                      <th>
+                        Fuel Level
+                      </th>
+
+                      <th>
+                        Efficiency
+                      </th>
+
+                      <th>
+                        Location
+                      </th>
                     </tr>
                   </thead>
 
@@ -1369,16 +1500,22 @@ function App() {
                     {vehicles.map(
                       (vehicle) => (
                         <tr
-                          key={vehicle.id}
+                          key={
+                            vehicle.id
+                          }
                         >
                           <td>
                             <strong>
-                              {vehicle.id}
+                              {
+                                vehicle.id
+                              }
                             </strong>
                           </td>
 
                           <td>
-                            {vehicle.type}
+                            {
+                              vehicle.type
+                            }
                           </td>
 
                           <td>
@@ -1398,7 +1535,9 @@ function App() {
                           </td>
 
                           <td>
-                            {vehicle.location}
+                            {
+                              vehicle.location
+                            }
                           </td>
                         </tr>
                       )
@@ -1498,7 +1637,6 @@ function App() {
       </div>
 
       <div className="cards">
-
         <div className="card">
           <div className="card-icon">
             📊
@@ -1509,9 +1647,7 @@ function App() {
               Fleet Utilization
             </h3>
 
-            <h2>
-              91%
-            </h2>
+            <h2>91%</h2>
           </div>
         </div>
 
@@ -1541,9 +1677,7 @@ function App() {
               Maintenance Score
             </h3>
 
-            <h2>
-              84%
-            </h2>
+            <h2>84%</h2>
           </div>
         </div>
 
@@ -1557,12 +1691,9 @@ function App() {
               Fuel Efficiency
             </h3>
 
-            <h2>
-              89%
-            </h2>
+            <h2>89%</h2>
           </div>
         </div>
-
       </div>
 
       <div className="panel">
@@ -1571,7 +1702,6 @@ function App() {
         </h2>
 
         <div className="analytics-grid">
-
           {vehicles.map(
             (vehicle) => {
               const utilization =
@@ -1597,7 +1727,7 @@ function App() {
                       style={{
                         width: `${utilization}%`,
                       }}
-                    />
+                    ></div>
                   </div>
 
                   <b>
@@ -1607,7 +1737,6 @@ function App() {
               );
             }
           )}
-
         </div>
       </div>
     </>
@@ -1636,21 +1765,158 @@ function App() {
         </span>
       </div>
 
-      <div className="tracking-list">
+      <div
+        className="panel"
+        style={{
+          padding: "0",
+          overflow: "hidden",
+          height: "620px",
+        }}
+      >
+        <MapContainer
+          center={[
+            13.0827,
+            80.2707,
+          ]}
+          zoom={11}
+          scrollWheelZoom={true}
+          style={{
+            width: "100%",
+            height: "100%",
+            minHeight: "620px",
+          }}
+        >
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-        {vehicles.map(
-          (vehicle) => (
+          {vehicles.map(
+            (
+              vehicle,
+              vehicleIndex
+            ) => {
+              const position =
+                vehicleCoordinates[
+                  vehicleIndex
+                ];
+
+              const markerColor =
+                vehicle.status ===
+                "Active"
+                  ? "#16a34a"
+                  : vehicle.status ===
+                    "Idle"
+                  ? "#f59e0b"
+                  : "#dc2626";
+
+              return (
+                <CircleMarker
+                  key={
+                    vehicle.id
+                  }
+                  center={
+                    position
+                  }
+                  radius={8}
+                  pathOptions={{
+                    color:
+                      markerColor,
+                    fillColor:
+                      markerColor,
+                    fillOpacity: 0.9,
+                  }}
+                >
+                  <Popup>
+                    <div
+                      style={{
+                        minWidth:
+                          "180px",
+                      }}
+                    >
+                      <h3
+                        style={{
+                          margin:
+                            "0 0 8px",
+                        }}
+                      >
+                        🚛{" "}
+                        {
+                          vehicle.id
+                        }
+                      </h3>
+
+                      <p>
+                        <strong>
+                          Type:
+                        </strong>{" "}
+                        {
+                          vehicle.type
+                        }
+                      </p>
+
+                      <p>
+                        <strong>
+                          Status:
+                        </strong>{" "}
+                        {
+                          vehicle.status
+                        }
+                      </p>
+
+                      <p>
+                        <strong>
+                          Fuel:
+                        </strong>{" "}
+                        {
+                          vehicle.fuel
+                        }%
+                      </p>
+
+                      <p>
+                        <strong>
+                          Speed:
+                        </strong>{" "}
+                        {
+                          vehicle.speed
+                        }{" "}
+                        km/h
+                      </p>
+
+                      <p>
+                        <strong>
+                          Location:
+                        </strong>{" "}
+                        {
+                          vehicle.location
+                        }
+                      </p>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              );
+            }
+          )}
+        </MapContainer>
+      </div>
+
+      <div
+        className="tracking-list"
+        style={{
+          marginTop: "20px",
+        }}
+      >
+        {vehicles
+          .filter(
+            (vehicle) =>
+              vehicle.status ===
+              "Active"
+          )
+          .slice(0, 10)
+          .map((vehicle) => (
             <div
               className="tracking-card"
               key={vehicle.id}
-              onClick={() =>
-                setSelectedVehicle(
-                  vehicle
-                )
-              }
-              style={{
-                cursor: "pointer",
-              }}
             >
               <div>
                 <h3>
@@ -1674,16 +1940,12 @@ function App() {
               </div>
 
               <div>
-                <span
-                  className={`status ${vehicle.status.toLowerCase()}`}
-                >
-                  {vehicle.status}
+                <span className="status active">
+                  Active
                 </span>
               </div>
             </div>
-          )
-        )}
-
+          ))}
       </div>
     </>
   );
@@ -1727,7 +1989,6 @@ function App() {
         </div>
 
         <div className="prediction-grid">
-
           <div className="prediction-card">
             <div className="prediction-icon">
               🔧
@@ -1738,8 +1999,7 @@ function App() {
             </h2>
 
             <h3>
-              {nextMaintenance?.id ||
-                "No vehicle"}
+              {nextMaintenance?.id}
             </h3>
 
             <p>
@@ -1758,13 +2018,12 @@ function App() {
             </h2>
 
             <h3>
-              {lowestFuel?.id ||
-                "No vehicle"}
+              {lowestFuel.id}
             </h3>
 
             <p>
               Fuel level is{" "}
-              {lowestFuel?.fuel ?? 0}%.
+              {lowestFuel.fuel}%.
             </p>
           </div>
 
@@ -1778,18 +2037,15 @@ function App() {
             </h2>
 
             <h3>
-              {highestSpeed?.id ||
-                "No vehicle"}
+              {highestSpeed.id}
             </h3>
 
             <p>
               Current speed:{" "}
-              {highestSpeed?.speed ??
-                0}{" "}
+              {highestSpeed.speed}{" "}
               km/h.
             </p>
           </div>
-
         </div>
       </>
     );
@@ -1803,9 +2059,7 @@ function App() {
     if (selectedReport) {
       return (
         <div className="report-details-page">
-
           <div className="report-top">
-
             <button
               className="back-button"
               onClick={() =>
@@ -1825,7 +2079,6 @@ function App() {
             >
               🖨 Print / Save PDF
             </button>
-
           </div>
 
           {selectedReport ===
@@ -1836,25 +2089,39 @@ function App() {
               </h1>
 
               <div className="summary-box">
-
                 <div>
-                  <span>Total</span>
+                  <span>
+                    Total
+                  </span>
+
                   <strong>
-                    {totalVehicles}
+                    {
+                      totalVehicles
+                    }
                   </strong>
                 </div>
 
                 <div>
-                  <span>Active</span>
+                  <span>
+                    Active
+                  </span>
+
                   <strong>
-                    {activeVehicles}
+                    {
+                      activeVehicles
+                    }
                   </strong>
                 </div>
 
                 <div>
-                  <span>Idle</span>
+                  <span>
+                    Idle
+                  </span>
+
                   <strong>
-                    {idleVehicles}
+                    {
+                      idleVehicles
+                    }
                   </strong>
                 </div>
 
@@ -1864,62 +2131,87 @@ function App() {
                   </span>
 
                   <strong>
-                    {maintenanceVehicles}
+                    {
+                      maintenanceVehicles
+                    }
                   </strong>
                 </div>
-
               </div>
 
               <div className="panel">
                 <div className="table-container">
                   <table>
-
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Fuel</th>
-                        <th>Speed</th>
-                        <th>Location</th>
+                        <th>
+                          Type
+                        </th>
+                        <th>
+                          Status
+                        </th>
+                        <th>
+                          Fuel
+                        </th>
+                        <th>
+                          Speed
+                        </th>
+                        <th>
+                          Location
+                        </th>
                       </tr>
                     </thead>
 
                     <tbody>
                       {vehicles.map(
-                        (vehicle) => (
+                        (
+                          vehicle
+                        ) => (
                           <tr
-                            key={vehicle.id}
+                            key={
+                              vehicle.id
+                            }
                           >
                             <td>
-                              {vehicle.id}
+                              {
+                                vehicle.id
+                              }
                             </td>
 
                             <td>
-                              {vehicle.type}
+                              {
+                                vehicle.type
+                              }
                             </td>
 
                             <td>
-                              {vehicle.status}
+                              {
+                                vehicle.status
+                              }
                             </td>
 
                             <td>
-                              {vehicle.fuel}%
+                              {
+                                vehicle.fuel
+                              }%
                             </td>
 
                             <td>
-                              {vehicle.speed}{" "}
+                              {
+                                vehicle.speed
+                              }{" "}
                               km/h
                             </td>
 
                             <td>
-                              {vehicle.location}
+                              {
+                                vehicle.location
+                              }
                             </td>
                           </tr>
                         )
                       )}
                     </tbody>
-
                   </table>
                 </div>
               </div>
@@ -1934,7 +2226,6 @@ function App() {
               </h1>
 
               <div className="cards">
-
                 <div className="card">
                   <h3>
                     Total Fuel Used
@@ -1964,7 +2255,6 @@ function App() {
                     10.8 km/L
                   </h2>
                 </div>
-
               </div>
 
               <div className="panel">
@@ -1973,23 +2263,27 @@ function App() {
                 </h2>
 
                 <div className="fuel-report-list">
-
                   {vehicles.map(
                     (vehicle) => (
                       <div
-                        key={vehicle.id}
+                        key={
+                          vehicle.id
+                        }
                       >
                         <span>
-                          {vehicle.id}
+                          {
+                            vehicle.id
+                          }
                         </span>
 
                         <span>
-                          {vehicle.fuel}%
+                          {
+                            vehicle.fuel
+                          }%
                         </span>
                       </div>
                     )
                   )}
-
                 </div>
               </div>
             </>
@@ -2004,42 +2298,63 @@ function App() {
 
               <div className="panel">
                 <div className="table-container">
-
                   <table>
                     <thead>
                       <tr>
-                        <th>Vehicle</th>
-                        <th>Issue</th>
-                        <th>Date</th>
-                        <th>Priority</th>
+                        <th>
+                          Vehicle
+                        </th>
+                        <th>
+                          Issue
+                        </th>
+                        <th>
+                          Date
+                        </th>
+                        <th>
+                          Priority
+                        </th>
                       </tr>
                     </thead>
 
                     <tbody>
                       {maintenance.map(
-                        (item, index) => (
-                          <tr key={index}>
+                        (
+                          item,
+                          index
+                        ) => (
+                          <tr
+                            key={
+                              index
+                            }
+                          >
                             <td>
-                              {item.vehicle}
+                              {
+                                item.vehicle
+                              }
                             </td>
 
                             <td>
-                              {item.issue}
+                              {
+                                item.issue
+                              }
                             </td>
 
                             <td>
-                              {item.date}
+                              {
+                                item.date
+                              }
                             </td>
 
                             <td>
-                              {item.priority}
+                              {
+                                item.priority
+                              }
                             </td>
                           </tr>
                         )
                       )}
                     </tbody>
                   </table>
-
                 </div>
               </div>
             </>
@@ -2054,7 +2369,6 @@ function App() {
               </h1>
 
               <div className="advanced-report-card">
-
                 <h2>
                   Fleet Performance
                 </h2>
@@ -2062,21 +2376,18 @@ function App() {
                 <p>
                   Total Vehicles:{" "}
                   <strong>
-                    {totalVehicles}
+                    {
+                      totalVehicles
+                    }
                   </strong>
                 </p>
 
                 <p>
                   Active Vehicles:{" "}
                   <strong>
-                    {activeVehicles}
-                  </strong>
-                </p>
-
-                <p>
-                  Idle Vehicles:{" "}
-                  <strong>
-                    {idleVehicles}
+                    {
+                      activeVehicles
+                    }
                   </strong>
                 </p>
 
@@ -2090,7 +2401,8 @@ function App() {
                 <p>
                   Average Speed:{" "}
                   <strong>
-                    {averageSpeed} km/h
+                    {averageSpeed}{" "}
+                    km/h
                   </strong>
                 </p>
 
@@ -2107,11 +2419,9 @@ function App() {
                     87%
                   </strong>
                 </p>
-
               </div>
             </>
           )}
-
         </div>
       );
     }
@@ -2120,9 +2430,7 @@ function App() {
       <>
         <div className="page-title">
           <div>
-            <h1>
-              Reports
-            </h1>
+            <h1>Reports</h1>
 
             <p>
               Generate and view fleet
@@ -2132,7 +2440,6 @@ function App() {
         </div>
 
         <div className="report-grid">
-
           <div
             className="advanced-report-card clickable"
             onClick={() =>
@@ -2236,7 +2543,6 @@ function App() {
               Open Report →
             </button>
           </div>
-
         </div>
       </>
     );
@@ -2248,10 +2554,6 @@ function App() {
 
   const renderContent = () => {
     switch (activeMenu) {
-
-      case "Dashboard":
-        return <Dashboard />;
-
       case "Vehicles":
         return <Vehicles />;
 
@@ -2285,18 +2587,27 @@ function App() {
   };
 
   /* =======================================================
+     LOGIN
+  ======================================================= */
+
+  if (!isLoggedIn) {
+    return (
+      <LoginPage
+        onLogin={() =>
+          setIsLoggedIn(true)
+        }
+      />
+    );
+  }
+
+  /* =======================================================
      MAIN UI
   ======================================================= */
 
   return (
     <div className="app">
-
-      {/* SIDEBAR */}
-
       <aside className="sidebar">
-
         <div className="logo">
-
           <div className="logo-icon">
             🚛
           </div>
@@ -2310,11 +2621,9 @@ function App() {
               Fleet Management
             </span>
           </div>
-
         </div>
 
         <nav>
-
           <button
             className={
               activeMenu ===
@@ -2323,9 +2632,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
-                "Dashboard"
-              )
+              goToMenu("Dashboard")
             }
           >
             🏠 Dashboard
@@ -2339,12 +2646,26 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
-                "Vehicles"
-              )
+              goToMenu("Vehicles")
             }
           >
             🚛 Vehicles
+          </button>
+
+          <button
+            className={
+              activeMenu ===
+              "Idle Vehicles"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              goToMenu(
+                "Idle Vehicles"
+              )
+            }
+          >
+            ⏸️ Idle Vehicles
           </button>
 
           <button
@@ -2355,9 +2676,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
-                "Trips"
-              )
+              goToMenu("Trips")
             }
           >
             🛣️ Trips
@@ -2371,7 +2690,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
+              goToMenu(
                 "Fuel Management"
               )
             }
@@ -2387,7 +2706,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
+              goToMenu(
                 "Maintenance"
               )
             }
@@ -2403,7 +2722,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
+              goToMenu(
                 "Analytics"
               )
             }
@@ -2419,7 +2738,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
+              goToMenu(
                 "Live Tracking"
               )
             }
@@ -2435,7 +2754,7 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
+              goToMenu(
                 "Predictions"
               )
             }
@@ -2451,22 +2770,15 @@ function App() {
                 : ""
             }
             onClick={() =>
-              setActiveMenu(
-                "Reports"
-              )
+              goToMenu("Reports")
             }
           >
             📄 Reports
           </button>
-
         </nav>
 
+        {/* NO K LETTER */}
         <div className="admin-box">
-
-          <div className="admin-avatar">
-            K
-          </div>
-
           <div>
             <strong>
               Kanimozhi
@@ -2476,17 +2788,11 @@ function App() {
               Fleet Manager
             </span>
           </div>
-
         </div>
-
       </aside>
 
-      {/* MAIN */}
-
       <main className="main">
-
         <header className="header">
-
           <div>
             <h3>
               {activeMenu}
@@ -2498,36 +2804,27 @@ function App() {
           </div>
 
           <div className="header-right">
-
             <span className="online">
               ● System Online
             </span>
 
+            {/* NO K LETTER HERE ALSO */}
             <div className="user">
-
-              <div className="user-avatar">
-                K
-              </div>
-
               <span>
                 Kanimozhi
               </span>
-
             </div>
-
           </div>
-
         </header>
 
         <section className="content">
           {renderContent()}
         </section>
-
       </main>
 
-      {/* =================================================
+      {/* ===================================================
           VEHICLE MODAL
-      ================================================= */}
+      =================================================== */}
 
       {selectedVehicle && (
         <div
@@ -2540,11 +2837,10 @@ function App() {
         >
           <div
             className="modal"
-            onClick={(event) =>
-              event.stopPropagation()
+            onClick={(e) =>
+              e.stopPropagation()
             }
           >
-
             <button
               className="modal-close"
               onClick={() =>
@@ -2557,32 +2853,35 @@ function App() {
             </button>
 
             <div className="modal-header">
-
               <div className="vehicle-big-icon">
                 🚛
               </div>
 
               <div>
                 <h2>
-                  {selectedVehicle.id}
+                  {
+                    selectedVehicle.id
+                  }
                 </h2>
 
                 <p>
-                  {selectedVehicle.type}
+                  {
+                    selectedVehicle.type
+                  }
                 </p>
               </div>
-
             </div>
 
             <div className="modal-details">
-
               <div>
                 <span>
                   Status
                 </span>
 
                 <strong>
-                  {selectedVehicle.status}
+                  {
+                    selectedVehicle.status
+                  }
                 </strong>
               </div>
 
@@ -2592,7 +2891,9 @@ function App() {
                 </span>
 
                 <strong>
-                  {selectedVehicle.fuel}%
+                  {
+                    selectedVehicle.fuel
+                  }%
                 </strong>
               </div>
 
@@ -2602,7 +2903,9 @@ function App() {
                 </span>
 
                 <strong>
-                  {selectedVehicle.speed}{" "}
+                  {
+                    selectedVehicle.speed
+                  }{" "}
                   km/h
                 </strong>
               </div>
@@ -2613,10 +2916,11 @@ function App() {
                 </span>
 
                 <strong>
-                  {selectedVehicle.location}
+                  {
+                    selectedVehicle.location
+                  }
                 </strong>
               </div>
-
             </div>
 
             <button
@@ -2629,17 +2933,15 @@ function App() {
             >
               Close
             </button>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
 /* =========================================================
-   EXPORT WITH ERROR PROTECTION
+   EXPORT
 ========================================================= */
 
 export default function AppWithErrorBoundary() {
